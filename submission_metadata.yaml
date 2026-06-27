@@ -1,0 +1,57 @@
+team_name: "IndiaRank-AI"
+
+primary_contact:
+  name: "Anil Chowdary"
+  email: "your-email@example.com"
+  phone: "+91-XXXXXXXXXX"
+
+team_members:
+  - name: "Anil Chowdary"
+    email: "your-email@example.com"
+    role: "Team Lead / ML Engineer"
+
+github_repo: "https://github.com/YOUR_USERNAME/indiarank-ai"
+
+sandbox_link: "https://huggingface.co/spaces/YOUR_USERNAME/indiarank-ai"
+
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+compute:
+  platform: "MacBook Pro (Apple Silicon)"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.11"
+  os: "macOS"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+ai_tools_used:
+  - "Antigravity (Google DeepMind)"
+  - "GitHub Copilot"
+
+ai_usage_summary: |
+  Used AI coding assistant for architecture discussion, code review, and boilerplate.
+  All scoring logic, concept groups, weights, and disqualifier rules were manually 
+  designed based on careful reading of the JD and signals documentation.
+  No candidate data was fed to any external LLM during ranking.
+  The ranking step runs fully offline with no network calls.
+
+methodology_summary: |
+  Multi-signal ranking engine with 4 layers:
+  1. Honeypot detection (impossible profile patterns → rank last)
+  2. Disqualifier penalty (title mismatch, IT-services-only career → multiply down)
+  3. Core scoring: 35% semantic (7 concept groups × weighted profile text) + 
+     30% skills depth (duration × proficiency × endorsements × assessment bonus) + 
+     35% career signal (title alignment, product vs services ratio, AI/ML years)
+  4. Behavioral modifier: 23 redrob signals → multiplier 0.05–1.30.
+  Final = raw × (0.5 + 0.5 × behavior) × disqualifier_mult.
+  Runtime: ~46s on CPU for 100K candidates. No GPU, no network, no pre-computation.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
