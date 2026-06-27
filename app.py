@@ -8,10 +8,6 @@ st.set_page_config(page_title="IndiaRank AI | Candidate Discovery", page_icon="�
 # Custom CSS for a million-dollar feel
 st.markdown("""
 <style>
-    .stApp {
-        background-color: #0E1117;
-        color: #FAFAFA;
-    }
     .candidate-card {
         background: #1E2329;
         padding: 20px;
@@ -106,8 +102,25 @@ with col2:
         for idx, row in df.head(5).iterrows():
             score_pct = round(row['score'] * 100, 1)
             
-            # Parse the reasoning string slightly to format it
-            reasoning = row.get('reasoning', 'Perfect semantic match based on career trajectory.')
+            # Parse the reasoning string into structured data
+            # Example format: "Senior AI Engineer with 5.9 yrs; 12 AI core skills; sem=0.93 skills=0.76 career=0.86 behavior=1.31 final=0.9990."
+            raw_reasoning = str(row.get('reasoning', ''))
+            
+            try:
+                parts = raw_reasoning.split(';')
+                profile = parts[0].strip() if len(parts) > 0 else "Profile Match"
+                skills = parts[1].strip() if len(parts) > 1 else "Skills Assessed"
+                metrics = parts[2].strip() if len(parts) > 2 else ""
+                
+                reasoning_html = f"""
+                    <ul style="margin-top: 5px; margin-bottom: 0px; padding-left: 20px;">
+                        <li><strong>Profile:</strong> {profile}</li>
+                        <li><strong>Match:</strong> {skills}</li>
+                        <li><strong>Raw Metrics:</strong> <span style="color:#00F0FF; font-family:monospace;">{metrics}</span></li>
+                    </ul>
+                """
+            except:
+                reasoning_html = f"{raw_reasoning}"
             
             st.markdown(f"""
             <div class="candidate-card">
@@ -121,8 +134,8 @@ with col2:
                     <span class="badge">📊 Strong Behavioral Signal</span>
                 </div>
                 <div class="reasoning">
-                    <strong>AI Agent Reasoning:</strong><br/>
-                    {reasoning}
+                    <strong>🤖 Agent Analysis:</strong>
+                    {reasoning_html}
                 </div>
             </div>
             """, unsafe_allow_html=True)
