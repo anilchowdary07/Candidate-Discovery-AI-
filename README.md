@@ -39,46 +39,46 @@ streamlit run app.py
 
 ## 🧠 Architecture
 
-```
-candidates.jsonl (100K)
-        │
-        ▼
-┌───────────────────────────────────────────────┐
-│           IndiaRank AI Pipeline               │
-│                                               │
-│  1. Honeypot Detection                        │
-│     └─ Flags impossible profiles (ranked 0)  │
-│                                               │
-│  2. Disqualifier Check                        │
-│     └─ Hard penalties for title/career mis-  │
-│        match (Marketing Mgr, pure IT services)│
-│                                               │
-│  3. Semantic Match Score (35%)                │
-│     └─ 7 concept groups × weighted text      │
-│        Production experience bonus           │
-│                                               │
-│  4. Skills Depth Score (30%)                  │
-│     └─ Duration × proficiency × endorsements │
-│        Assessment score integration          │
-│        Anti-keyword-stuffing guard           │
-│                                               │
-│  5. Career Signal Score (35%)                 │
-│     └─ Title alignment (50+ patterns)        │
-│        Product vs IT services ratio          │
-│        Career progression detection          │
-│        AI/ML years in role                   │
-│                                               │
-│  6. Behavioral Modifier (×0.5 + 0.5×signal)  │
-│     └─ 23 Redrob signals                     │
-│        Recency, response rate, GitHub        │
-│        Location fit, notice period           │
-│                                               │
-│  Final = (0.35×S + 0.30×Sk + 0.35×C)        │
-│          × (0.5 + 0.5×B) × disqualifier_mult │
-└───────────────────────────────────────────────┘
-        │
-        ▼
-submission.csv (Top 100 ranked candidates)
+```mermaid
+graph TD
+    A[candidates.jsonl<br/>100,000 Profiles] --> B{Honeypot Detection}
+    B -- Impossible profile/Fraud --> Z[Rank 0]
+    B -- Clean Profile --> C{Disqualifier Check}
+    
+    C -- Wrong Title / No AI Exp --> Y[Apply Penalty Multiplier]
+    C -- Valid Candidate --> D[Core Ranking Engine]
+    Y --> D
+    
+    subgraph "Parallel Scoring Modules"
+    D --> E(Semantic Match<br/>Vector Similarity)
+    D --> F(Skills Depth<br/>Taxonomy & Duration)
+    D --> G(Career Signal<br/>Progression & YOE)
+    end
+    
+    E --> H[Raw Composite Score]
+    F --> H
+    G --> H
+    
+    subgraph "Behavioral Adjustments"
+    H --> I{Redrob Signals<br/>Activity, GH, Notice Period}
+    I --> J[Final Behavioral Multiplier]
+    end
+    
+    J --> K[Final Output Score]
+    
+    K --> L[submission.csv<br/>Top Ranked Output]
+    
+    style A fill:#1f2937,stroke:#00f0ff,stroke-width:2px,color:#fff
+    style L fill:#1f2937,stroke:#00f0ff,stroke-width:2px,color:#fff
+    style B fill:#374151,stroke:#f87171,color:#fff
+    style C fill:#374151,stroke:#f87171,color:#fff
+    style D fill:#111827,stroke:#10b981,color:#fff
+    style E fill:#064e3b,stroke:#34d399,color:#fff
+    style F fill:#064e3b,stroke:#34d399,color:#fff
+    style G fill:#064e3b,stroke:#34d399,color:#fff
+    style H fill:#1e3a8a,stroke:#60a5fa,color:#fff
+    style I fill:#4c1d95,stroke:#a78bfa,color:#fff
+    style K fill:#831843,stroke:#f472b6,color:#fff
 ```
 
 ---
