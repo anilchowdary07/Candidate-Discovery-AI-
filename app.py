@@ -80,12 +80,23 @@ with col1:
     career_weight = st.slider("Career Trajectory Weight", 0.0, 1.0, 0.2)
     
     st.markdown("---")
-    if st.button("🚀 Re-Run Ranking Engine", use_container_width=True):
-        with st.spinner("Initializing Vector Search over 100,000 candidates..."):
-            time.sleep(1.5)
-        with st.spinner("Applying Behavioral Multipliers..."):
-            time.sleep(1)
-        st.success("Ranking Complete! Found 5 perfect matches.")
+    if st.button("🚀 Re-Run Ranking Engine", type="primary", use_container_width=True):
+        import subprocess
+        with st.spinner("Executing semantic ranking over 100,000 candidates..."):
+            try:
+                result = subprocess.run(
+                    ["python3", "rank.py", "--candidates", "candidates.jsonl", "--embeddings", "embeddings.npz", "--out", "submission.csv"],
+                    capture_output=True, text=True
+                )
+                if result.returncode == 0:
+                    st.success("Ranking Complete! Loading fresh results...")
+                    load_data.clear() # Clear cache to load new data
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error(f"Ranking failed:\\n{result.stderr}")
+            except Exception as e:
+                st.error(f"Execution error: {str(e)}")
 
 with col2:
     st.markdown("#### 🏆 Top Ranked Candidates")
