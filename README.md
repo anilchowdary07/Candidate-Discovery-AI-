@@ -67,18 +67,6 @@ graph TD
     J --> K[Final Output Score]
     
     K --> L[submission.csv<br/>Top Ranked Output]
-    
-    style A fill:#1f2937,stroke:#00f0ff,stroke-width:2px,color:#fff
-    style L fill:#1f2937,stroke:#00f0ff,stroke-width:2px,color:#fff
-    style B fill:#374151,stroke:#f87171,color:#fff
-    style C fill:#374151,stroke:#f87171,color:#fff
-    style D fill:#111827,stroke:#10b981,color:#fff
-    style E fill:#064e3b,stroke:#34d399,color:#fff
-    style F fill:#064e3b,stroke:#34d399,color:#fff
-    style G fill:#064e3b,stroke:#34d399,color:#fff
-    style H fill:#1e3a8a,stroke:#60a5fa,color:#fff
-    style I fill:#4c1d95,stroke:#a78bfa,color:#fff
-    style K fill:#831843,stroke:#f472b6,color:#fff
 ```
 
 ---
