@@ -161,16 +161,17 @@ with tab2:
 
 with tab3:
     st.markdown("### Ranking Engine Configuration")
-    st.slider("Vector Similarity Weight (BGE-small)", 0.0, 1.0, 0.50)
-    st.slider("Behavioral Graph Weight", 0.0, 1.0, 0.30)
-    st.slider("Career Progression Weight", 0.0, 1.0, 0.20)
+    w_sem = st.slider("Vector Similarity Weight (BGE-small)", 0.0, 1.0, 0.50)
+    w_beh = st.slider("Behavioral Graph Weight", 0.0, 1.0, 0.30)
+    w_car = st.slider("Career Progression Weight", 0.0, 1.0, 0.20)
     
     st.markdown("<br/>", unsafe_allow_html=True)
     if st.button("🚀 Re-Run Distributed Ranking Engine", type="primary", use_container_width=True):
         with st.spinner("Executing semantic ranking over 100,000 candidates..."):
             try:
                 result = subprocess.run(
-                    ["python3", "rank.py", "--candidates", "candidates.jsonl", "--embeddings", "embeddings.npz", "--out", "submission.csv"],
+                    ["python3", "rank.py", "--candidates", "candidates.jsonl", "--embeddings", "embeddings.npz", "--out", "submission.csv",
+                     "--w-sem", str(w_sem), "--w-career", str(w_car), "--w-behavior", str(w_beh)],
                     capture_output=True, text=True
                 )
                 if result.returncode == 0:

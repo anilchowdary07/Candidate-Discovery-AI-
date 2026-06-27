@@ -797,7 +797,10 @@ def compute_keyword_semantic_score(candidate: Dict[str, Any]) -> float:
 
 def rank_candidates(
     candidates: List[Dict[str, Any]],
-    embedding_data: Optional[Tuple] = None
+    embedding_data: Optional[Tuple] = None,
+    w_sem: float = 0.50,
+    w_career: float = 0.20,
+    w_behavior: float = 0.30
 ) -> List[Tuple[str, float, str]]:
     """
     Rank all candidates. Returns [(candidate_id, score, reasoning)] sorted by score desc.
@@ -846,14 +849,16 @@ def rank_candidates(
 
         # ── Stage 4: Weighted combination (NDCG@10 optimized) ──
         if use_embeddings:
-            # With real embeddings: semantic gets more weight
-            raw = 0.40 * sem_score + 0.30 * skills_score + 0.30 * career_score
+            # Derive skills weight from the remainder
+            w_skills = max(0.0, 1.0 - w_sem - w_career)
+            raw = w_sem * sem_score + w_skills * skills_score + w_career * career_score
         else:
-            # Without embeddings: balance more toward structured signals
-            raw = 0.30 * sem_score + 0.35 * skills_score + 0.35 * career_score
+            w_skills = max(0.0, 1.0 - w_sem - w_career)
+            raw = w_sem * sem_score + w_skills * skills_score + w_career * career_score
 
-        # Apply behavioral modifier
-        final = raw * (0.40 + 0.60 * behavior_mod)
+        # Apply behavioral modifier dynamically based on UI weight
+        w_beh_base = max(0.0, 1.0 - w_behavior)
+        final = raw * (w_beh_base + w_behavior * behavior_mod)
 
         # Apply disqualifier penalty
         final *= dq_mult
@@ -957,6 +962,9 @@ Examples:
                         help="Pre-computed embeddings .npz (from embed.py). Auto-detected if exists.")
     parser.add_argument("--top", type=int, default=100)
     parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--w-sem", type=float, default=0.50)
+    parser.add_argument("--w-career", type=float, default=0.20)
+    parser.add_argument("--w-behavior", type=float, default=0.30)
     args = parser.parse_args()
 
     # Load candidates
@@ -986,7 +994,7 @@ Examples:
         print(f"[IndiaRank AI] Ranking {len(candidates):,} candidates...", flush=True)
     import time
     t0 = time.time()
-    ranked = rank_candidates(candidates, embedding_data)
+    ranked = rank_candidates(candidates, embedding_data, args.w_sem, args.w_career, args.w_behavior)
     elapsed = time.time() - t0
 
     if args.verbose:
