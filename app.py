@@ -95,6 +95,7 @@ with tab1:
     df = load_data()
     if df is not None:
         st.markdown("### Top AI Matches")
+        st.info("💡 **Showing cached results from previous execution.** Go to the **Engine Controls** tab to adjust semantic weights and trigger a live re-ranking.")
         st.caption("Candidates ranked by semantic distance and behavioral scoring.")
         
         for idx, row in df.head(10).iterrows():
